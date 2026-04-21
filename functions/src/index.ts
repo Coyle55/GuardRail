@@ -11,7 +11,11 @@ export const tellerWebhook = onRequest(async (req, res) => {
     return
   }
 
-  const rawBody = req.rawBody?.toString('utf8') ?? JSON.stringify(req.body)
+  const rawBody = req.rawBody?.toString('utf8')
+  if (!rawBody) {
+    res.status(500).send('rawBody unavailable')
+    return
+  }
   const signatureHeader = (req.headers['teller-signature'] as string) ?? ''
 
   const result = await processTellerWebhook(req.body, rawBody, signatureHeader, db)

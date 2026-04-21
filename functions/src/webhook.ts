@@ -69,6 +69,10 @@ export async function processTellerWebhook(
   const merchantName = (counterparty?.name as string) ?? ''
   const betAmount = Math.abs(parseFloat(amountStr))
 
+  if (!transactionId || !accountId || !amountStr || !isFinite(betAmount) || betAmount <= 0) {
+    return { status: 200, message: 'invalid payload' }
+  }
+
   // Deduplication
   const existing = await db
     .collectionGroup('transfers')
@@ -112,9 +116,10 @@ export async function processTellerWebhook(
   }
 
   // Write pending transfer
+  const percentage = Math.max(1, Math.min(50, userData.guardrailPercentage))
   const transferPayload = buildTransferPayload({
     betAmount,
-    percentage: userData.guardrailPercentage,
+    percentage,
     merchant: merchantName,
     tellerTransactionId: transactionId,
   })
@@ -148,7 +153,8 @@ export async function processTellerWebhook(
     } else {
       await transferRef.update({ status: 'failed' })
     }
-  } catch {
+  } catch (err) {
+    console.error('Teller ACH transfer failed', { transactionId, err })
     await transferRef.update({ status: 'failed' })
   }
 
