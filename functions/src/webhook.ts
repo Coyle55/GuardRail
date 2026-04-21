@@ -6,8 +6,8 @@ import { calculateGuardrailAmount } from './lib/transfer'
 export function verifyTellerSignature(payload: string, header: string, secret: string): boolean {
   if (!header) return false
   const parts = header.split(',')
-  const timestamp = parts[0]?.split('=')[1]
-  const signature = parts[1]?.split('=')[1]
+  const timestamp = parts.find(p => p.startsWith('t='))?.slice(2)
+  const signature = parts.find(p => p.startsWith('v1='))?.slice(3)
   if (!timestamp || !signature) return false
 
   const hmac = crypto.createHmac('sha256', secret)
@@ -46,7 +46,11 @@ export async function processTellerWebhook(
   signatureHeader: string,
   db: admin.firestore.Firestore
 ): Promise<{ status: number; message: string }> {
-  const secret = process.env.TELLER_SIGNING_SECRET ?? ''
+  const secret = process.env.TELLER_SIGNING_SECRET
+  if (!secret) {
+    console.error('TELLER_SIGNING_SECRET is not configured')
+    return { status: 500, message: 'Webhook secret not configured' }
+  }
 
   if (!verifyTellerSignature(rawBody, signatureHeader, secret)) {
     return { status: 401, message: 'Invalid signature' }
