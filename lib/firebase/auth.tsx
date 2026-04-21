@@ -39,15 +39,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   async function signUp(email: string, password: string, displayName: string) {
     const { user: newUser } = await createUserWithEmailAndPassword(auth, email, password)
-    await setDoc(doc(db, 'users', newUser.uid), {
-      email,
-      displayName,
-      guardrailPercentage: 20,
-      guardrailActive: false,
-      tellerBettingAccountId: null,
-      tellerSavingsAccountId: null,
-      createdAt: serverTimestamp(),
-    })
+    try {
+      await setDoc(doc(db, 'users', newUser.uid), {
+        email,
+        displayName,
+        guardrailPercentage: 20,
+        guardrailActive: false,
+        tellerBettingAccountId: null,
+        tellerSavingsAccountId: null,
+        createdAt: serverTimestamp(),
+      })
+    } catch (error) {
+      await newUser.delete()
+      throw error
+    }
   }
 
   async function logOut() {
