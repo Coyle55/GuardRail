@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/firebase/auth'
 import { doc, updateDoc } from 'firebase/firestore'
@@ -10,12 +10,20 @@ import { TellerConnect } from '@/components/onboarding/TellerConnect'
 type Step = 'betting' | 'savings' | 'percentage'
 
 export default function OnboardingPage() {
-  const { user } = useAuth()
   const router = useRouter()
+  const { user, loading: authLoading } = useAuth()
   const [step, setStep] = useState<Step>('betting')
   const [percentage, setPercentage] = useState(20)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.replace('/login')
+    }
+  }, [user, authLoading, router])
+
+  if (authLoading || !user) return null
 
   async function linkAccount(accessToken: string, type: 'betting' | 'savings') {
     if (!user) return
@@ -23,23 +31,15 @@ export default function OnboardingPage() {
     setError('')
     try {
       const idToken = await user.getIdToken()
-      const accountsRes = await fetch('https://api.teller.io/accounts', {
-        headers: { Authorization: `Basic ${Buffer.from(`${accessToken}:`).toString('base64')}` },
-      })
-      const accounts = await accountsRes.json()
-      const accountId = accounts[0]?.id
-
-      if (!accountId) throw new Error('No accounts found in enrollment')
-
-      await fetch('/api/teller/link', {
+      const res = await fetch('/api/teller/link', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${idToken}`,
         },
-        body: JSON.stringify({ accessToken, accountId, type }),
+        body: JSON.stringify({ accessToken, type }),
       })
-
+      if (!res.ok) throw new Error('Failed to link account')
       setStep(type === 'betting' ? 'savings' : 'percentage')
     } catch {
       setError('Failed to link account. Please try again.')

@@ -20,6 +20,10 @@ interface Props {
 
 export function TellerConnect({ onSuccess, label, disabled }: Props) {
   function handleClick() {
+    if (!window.TellerConnect) {
+      console.error('Teller Connect script not loaded')
+      return
+    }
     const connect = window.TellerConnect.setup({
       applicationId: process.env.NEXT_PUBLIC_TELLER_APP_ID!,
       onSuccess: (enrollment) => onSuccess(enrollment.accessToken),

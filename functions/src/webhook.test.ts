@@ -5,7 +5,7 @@ describe('verifyTellerSignature', () => {
   const secret = 'test-secret'
 
   function makeHeader(payload: string): string {
-    const timestamp = '1700000000'
+    const timestamp = Math.floor(Date.now() / 1000).toString()
     const hmac = crypto.createHmac('sha256', secret)
     hmac.update(`${timestamp}.${payload}`)
     const sig = hmac.digest('hex')
@@ -63,7 +63,7 @@ function makeWebhookBody(merchantName = 'DRAFTKINGS', amount = '5.00', accountId
 
 // Helper to make a valid signature header
 function makeSignatureHeader(rawBody: string, secret: string): string {
-  const timestamp = '1700000000'
+  const timestamp = Math.floor(Date.now() / 1000).toString()
   const hmac = crypto.createHmac('sha256', secret)
   hmac.update(`${timestamp}.${rawBody}`)
   const sig = hmac.digest('hex')

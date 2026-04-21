@@ -11,6 +11,7 @@ export default function SettingsPage() {
   const [active, setActive] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     if (profile) {
@@ -23,18 +24,25 @@ export default function SettingsPage() {
     if (!user) return
     setSaving(true)
     setSaved(false)
-    const idToken = await user.getIdToken()
-    await fetch('/api/user/settings', {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${idToken}`,
-      },
-      body: JSON.stringify({ guardrailPercentage: percentage, guardrailActive: active }),
-    })
-    setSaving(false)
-    setSaved(true)
-    setTimeout(() => setSaved(false), 2000)
+    setError('')
+    try {
+      const idToken = await user.getIdToken()
+      const res = await fetch('/api/user/settings', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({ guardrailPercentage: percentage, guardrailActive: active }),
+      })
+      if (!res.ok) throw new Error('Save failed')
+      setSaved(true)
+      setTimeout(() => setSaved(false), 2000)
+    } catch {
+      setError('Failed to save settings. Please try again.')
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (
@@ -121,6 +129,7 @@ export default function SettingsPage() {
         >
           {saving ? 'Saving…' : saved ? 'Saved!' : 'Save Settings'}
         </button>
+        {error && <p className="text-red-400 text-sm text-center mt-2">{error}</p>}
       </div>
     </div>
   )

@@ -18,7 +18,14 @@ export async function PATCH(req: NextRequest) {
   const { guardrailPercentage, guardrailActive } = await req.json()
   const update: Record<string, unknown> = {}
 
-  if (typeof guardrailPercentage === 'number') update.guardrailPercentage = guardrailPercentage
+  if (
+    typeof guardrailPercentage === 'number' &&
+    isFinite(guardrailPercentage) &&
+    guardrailPercentage >= 1 &&
+    guardrailPercentage <= 50
+  ) {
+    update.guardrailPercentage = guardrailPercentage
+  }
   if (typeof guardrailActive === 'boolean') update.guardrailActive = guardrailActive
 
   if (Object.keys(update).length === 0) {

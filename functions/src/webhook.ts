@@ -10,6 +10,11 @@ export function verifyTellerSignature(payload: string, header: string, secret: s
   const signature = parts.find(p => p.startsWith('v1='))?.slice(3)
   if (!timestamp || !signature) return false
 
+  const ts = parseInt(timestamp, 10)
+  if (!isFinite(ts) || Math.abs(Date.now() / 1000 - ts) > 300) {
+    return false
+  }
+
   const hmac = crypto.createHmac('sha256', secret)
   hmac.update(`${timestamp}.${payload}`)
   const expected = hmac.digest('hex')

@@ -16,13 +16,26 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
   }
 
-  const { accessToken, accountId, type } = await req.json()
+  const { accessToken, type } = await req.json()
 
-  if (!accessToken || !accountId || !['betting', 'savings'].includes(type)) {
+  if (!accessToken || !['betting', 'savings'].includes(type)) {
     return NextResponse.json({ error: 'Invalid payload' }, { status: 400 })
   }
 
   const basicAuth = Buffer.from(`${accessToken}:`).toString('base64')
+
+  // Fetch accounts from Teller server-side
+  const accountsRes = await fetch('https://api.teller.io/accounts', {
+    headers: { Authorization: `Basic ${basicAuth}` },
+  })
+  if (!accountsRes.ok) {
+    return NextResponse.json({ error: 'Failed to fetch accounts from Teller' }, { status: 502 })
+  }
+  const accounts = await accountsRes.json()
+  const accountId = accounts[0]?.id
+  if (!accountId) {
+    return NextResponse.json({ error: 'No accounts found in enrollment' }, { status: 400 })
+  }
 
   let savingsDetails: { routing_number: string; account_number: string } | null = null
   if (type === 'savings') {

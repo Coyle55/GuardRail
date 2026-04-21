@@ -15,7 +15,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Script src="https://cdn.teller.io/connect/connect.js" strategy="beforeInteractive" />
+        <Script src="https://cdn.teller.io/connect/connect.js" strategy="lazyOnload" />
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
