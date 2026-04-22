@@ -1,11 +1,14 @@
 import { onRequest } from 'firebase-functions/v2/https'
+import { defineSecret } from 'firebase-functions/params'
 import * as admin from 'firebase-admin'
 import { processTellerWebhook } from './webhook'
+
+const tellerSigningSecret = defineSecret('TELLER_SIGNING_SECRET')
 
 admin.initializeApp()
 const db = admin.firestore()
 
-export const tellerWebhook = onRequest(async (req, res) => {
+export const tellerWebhook = onRequest({ secrets: [tellerSigningSecret] }, async (req, res) => {
   if (req.method !== 'POST') {
     res.status(405).send('Method Not Allowed')
     return

@@ -3,6 +3,12 @@ import * as fs from 'fs'
 import * as path from 'path'
 
 function getCerts() {
+  if (process.env.TELLER_CERT && process.env.TELLER_KEY) {
+    return {
+      cert: Buffer.from(process.env.TELLER_CERT),
+      key: Buffer.from(process.env.TELLER_KEY),
+    }
+  }
   const cert = fs.readFileSync(path.join(process.cwd(), 'teller-certificate.pem'))
   const key = fs.readFileSync(path.join(process.cwd(), 'teller-private-key.pem'))
   return { cert, key }

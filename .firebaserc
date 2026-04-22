@@ -1,5 +1,12 @@
 {
   "projects": {
-    "default": "guardrail-app"
-  }
+    "default": "guardrail-2800b"
+  },
+  "targets": {},
+  "etags": {
+    "guardrail-2800b": {
+      "extensionInstances": {}
+    }
+  },
+  "dataconnectEmulatorConfig": {}
 }

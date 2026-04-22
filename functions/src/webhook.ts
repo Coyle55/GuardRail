@@ -51,7 +51,7 @@ export async function processTellerWebhook(
   signatureHeader: string,
   db: admin.firestore.Firestore
 ): Promise<{ status: number; message: string }> {
-  const secret = process.env.TELLER_SIGNING_SECRET
+  const secret = process.env.TELLER_SIGNING_SECRET?.trim()
   if (!secret) {
     console.error('TELLER_SIGNING_SECRET is not configured')
     return { status: 500, message: 'Webhook secret not configured' }
