@@ -5,6 +5,24 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/lib/firebase/auth'
 
+function ShieldMark() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden>
+      <path
+        d="M11 1.5L3 5.5v6c0 4.97 3.5 9.63 8 10.77C16.5 21.13 20 16.47 20 11.5v-6L11 1.5z"
+        fill="#06080C"
+      />
+      <path
+        d="M7.5 11.5l2.8 2.8 5-6"
+        stroke="#06080C"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
 export default function LoginPage() {
   const { signIn } = useAuth()
   const router = useRouter()
@@ -28,44 +46,130 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gray-950">
-      <div className="w-full max-w-sm p-8 bg-gray-900 rounded-2xl shadow-xl">
-        <h1 className="text-2xl font-bold text-white mb-6">Sign in to GuardRail</h1>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm text-gray-400 mb-1">Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              disabled={loading}
-              required
-              className="w-full px-3 py-2 bg-gray-800 text-white rounded-lg border border-gray-700 focus:outline-none focus:border-indigo-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm text-gray-400 mb-1">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              disabled={loading}
-              required
-              className="w-full px-3 py-2 bg-gray-800 text-white rounded-lg border border-gray-700 focus:outline-none focus:border-indigo-500"
-            />
-          </div>
-          {error && <p className="text-red-400 text-sm">{error}</p>}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-semibold rounded-lg transition"
+    <main
+      style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '24px',
+        background: 'var(--gr-bg)',
+        backgroundImage: `
+          radial-gradient(ellipse 70% 50% at 50% -10%, rgba(0,232,122,0.08) 0%, transparent 65%),
+          radial-gradient(rgba(255,255,255,0.035) 1px, transparent 1px)
+        `,
+        backgroundSize: '100% 100%, 28px 28px',
+      }}
+    >
+      <div className="gr-fade-up" style={{ width: '100%', maxWidth: '400px' }}>
+        {/* Brand */}
+        <div style={{ textAlign: 'center', marginBottom: '36px' }}>
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '52px',
+              height: '52px',
+              background: 'var(--gr-accent)',
+              borderRadius: '14px',
+              marginBottom: '16px',
+              boxShadow: '0 0 28px var(--gr-accent-glow)',
+            }}
           >
-            {loading ? 'Signing in…' : 'Sign in'}
-          </button>
-        </form>
-        <p className="mt-4 text-sm text-gray-400 text-center">
+            <ShieldMark />
+          </div>
+          <h1
+            style={{
+              fontFamily: 'var(--font-syne)',
+              fontWeight: 700,
+              fontSize: '20px',
+              letterSpacing: '-0.02em',
+              color: 'var(--gr-text)',
+              marginBottom: '4px',
+            }}
+          >
+            GuardRail
+          </h1>
+          <p style={{ fontSize: '13px', color: 'var(--gr-text-3)' }}>
+            Automatic savings on every bet
+          </p>
+        </div>
+
+        {/* Card */}
+        <div
+          style={{
+            background: 'var(--gr-card)',
+            border: '1px solid var(--gr-border-md)',
+            borderRadius: '20px',
+            padding: '32px',
+          }}
+        >
+          <h2
+            style={{
+              fontFamily: 'var(--font-syne)',
+              fontWeight: 600,
+              fontSize: '17px',
+              letterSpacing: '-0.01em',
+              marginBottom: '24px',
+              color: 'var(--gr-text)',
+            }}
+          >
+            Sign in
+          </h2>
+
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div>
+              <label className="gr-label" htmlFor="email">Email</label>
+              <input
+                id="email"
+                type="email"
+                className="gr-input"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={loading}
+                required
+                placeholder="you@example.com"
+              />
+            </div>
+            <div>
+              <label className="gr-label" htmlFor="password">Password</label>
+              <input
+                id="password"
+                type="password"
+                className="gr-input"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={loading}
+                required
+                placeholder="••••••••"
+              />
+            </div>
+
+            {error && (
+              <p
+                style={{
+                  fontSize: '13px',
+                  color: 'var(--gr-red)',
+                  background: 'var(--gr-red-dim)',
+                  padding: '10px 14px',
+                  borderRadius: '8px',
+                  margin: 0,
+                }}
+              >
+                {error}
+              </p>
+            )}
+
+            <button type="submit" className="gr-btn-primary" disabled={loading} style={{ marginTop: '4px' }}>
+              {loading ? 'Signing in…' : 'Sign in'}
+            </button>
+          </form>
+        </div>
+
+        <p style={{ textAlign: 'center', fontSize: '13px', color: 'var(--gr-text-3)', marginTop: '20px' }}>
           No account?{' '}
-          <Link href="/signup" className="text-indigo-400 hover:underline">
+          <Link href="/signup" style={{ color: 'var(--gr-accent)', textDecoration: 'none', fontWeight: 500 }}>
             Create one
           </Link>
         </p>

@@ -1,26 +1,343 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-dm-sans);
+  --font-mono: var(--font-dm-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  --gr-bg: #06080C;
+  --gr-surface: #0C1018;
+  --gr-card: #101620;
+  --gr-elevated: #141D2A;
+  --gr-hover: #1A2535;
+
+  --gr-border: rgba(255, 255, 255, 0.06);
+  --gr-border-md: rgba(255, 255, 255, 0.10);
+  --gr-border-bright: rgba(255, 255, 255, 0.15);
+
+  --gr-accent: #00E87A;
+  --gr-accent-dim: rgba(0, 232, 122, 0.09);
+  --gr-accent-border: rgba(0, 232, 122, 0.28);
+  --gr-accent-glow: rgba(0, 232, 122, 0.18);
+
+  --gr-text: #EFF6FF;
+  --gr-text-2: #8BA3BF;
+  --gr-text-3: #415770;
+
+  --gr-red: #FF4757;
+  --gr-red-dim: rgba(255, 71, 87, 0.10);
+  --gr-yellow: #F59E0B;
+  --gr-yellow-dim: rgba(245, 158, 11, 0.10);
+  --gr-green-dim: rgba(0, 232, 122, 0.10);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--gr-bg);
+  color: var(--gr-text);
+  font-family: var(--font-dm-sans, 'DM Sans', system-ui, sans-serif);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+::-webkit-scrollbar { width: 3px; height: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--gr-border-md); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gr-text-3); }
+
+/* ── Custom range slider ── */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 3px;
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--gr-bg);
+  border: 2px solid var(--gr-accent);
+  cursor: pointer;
+  box-shadow: 0 0 12px var(--gr-accent-glow);
+  transition: box-shadow 0.2s, transform 0.15s;
+}
+input[type="range"]::-webkit-slider-thumb:hover {
+  box-shadow: 0 0 22px rgba(0, 232, 122, 0.38);
+  transform: scale(1.12);
+}
+input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--gr-bg);
+  border: 2px solid var(--gr-accent);
+  cursor: pointer;
+  box-shadow: 0 0 12px var(--gr-accent-glow);
+}
+@media (max-width: 767px) {
+  input[type="range"]::-webkit-slider-thumb {
+    width: 26px;
+    height: 26px;
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 26px;
+    height: 26px;
+  }
+}
+
+/* ── Shared card ── */
+.gr-card {
+  background: var(--gr-card);
+  border: 1px solid var(--gr-border);
+  border-radius: 16px;
+  transition: border-color 0.2s ease;
+}
+.gr-card:hover {
+  border-color: var(--gr-border-md);
+}
+
+/* ── Form elements ── */
+.gr-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gr-text-3);
+  margin-bottom: 8px;
+}
+.gr-input {
+  background: var(--gr-surface);
+  border: 1px solid var(--gr-border-md);
+  border-radius: 10px;
+  color: var(--gr-text);
+  font-family: inherit;
+  font-size: 14px;
+  padding: 11px 14px;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  appearance: none;
+}
+.gr-input:focus {
+  border-color: var(--gr-accent-border);
+  box-shadow: 0 0 0 3px rgba(0, 232, 122, 0.07);
+}
+.gr-input::placeholder { color: var(--gr-text-3); }
+.gr-input:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ── Buttons ── */
+.gr-btn-primary {
+  background: var(--gr-accent);
+  color: #06080C;
+  border: none;
+  border-radius: 10px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.01em;
+  padding: 13px 20px;
+  cursor: pointer;
+  width: 100%;
+  transition: opacity 0.15s, box-shadow 0.2s, transform 0.1s;
+}
+.gr-btn-primary:hover:not(:disabled) {
+  opacity: 0.9;
+  box-shadow: 0 0 24px var(--gr-accent-glow);
+}
+.gr-btn-primary:active:not(:disabled) { transform: scale(0.99); }
+.gr-btn-primary:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* ── Animations ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position:  600px 0; }
+}
+@keyframes accentPulse {
+  0%, 100% { filter: drop-shadow(0 0 4px rgba(0, 232, 122, 0.15)); }
+  50%       { filter: drop-shadow(0 0 16px rgba(0, 232, 122, 0.40)); }
+}
+@keyframes barFill {
+  from { width: 0; }
+}
+
+.gr-fade-up   { animation: fadeUp 0.45s ease both; }
+.gr-fade-up-1 { animation: fadeUp 0.45s ease 0.08s both; }
+.gr-fade-up-2 { animation: fadeUp 0.45s ease 0.16s both; }
+.gr-fade-up-3 { animation: fadeUp 0.45s ease 0.24s both; }
+.gr-fade-up-4 { animation: fadeUp 0.45s ease 0.32s both; }
+.gr-fade-up-5 { animation: fadeUp 0.45s ease 0.40s both; }
+
+.gr-skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--gr-card) 0%,
+    var(--gr-elevated) 50%,
+    var(--gr-card) 100%
+  );
+  background-size: 600px 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 12px;
+}
+
+.gr-accent-num {
+  font-family: var(--font-dm-mono, 'DM Mono', monospace);
+  color: var(--gr-text);
+  animation: accentPulse 4s ease-in-out infinite;
+}
+
+/* ── Responsive layout ── */
+.gr-dashboard-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--gr-bg);
+}
+@media (min-width: 768px) {
+  .gr-dashboard-layout { flex-direction: row; }
+}
+
+.gr-main-content {
+  flex: 1;
+  padding: 24px 16px 84px;
+  overflow-y: auto;
+  min-width: 0;
+}
+@media (min-width: 768px) {
+  .gr-main-content { padding: 36px 40px; }
+}
+
+/* ── Sidebar: desktop only ── */
+.gr-sidebar {
+  display: none;
+}
+@media (min-width: 768px) {
+  .gr-sidebar {
+    display: flex;
+    flex-direction: column;
+    width: 220px;
+    min-height: 100vh;
+    flex-shrink: 0;
+    background: var(--gr-surface);
+    border-right: 1px solid var(--gr-border);
+    padding: 28px 14px;
+  }
+}
+
+/* ── Bottom nav: mobile only ── */
+.gr-bottom-nav {
+  display: flex;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: var(--gr-surface);
+  border-top: 1px solid var(--gr-border);
+  z-index: 100;
+  align-items: stretch;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (min-width: 768px) {
+  .gr-bottom-nav { display: none; }
+}
+
+.gr-bottom-nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  color: var(--gr-text-3);
+  transition: color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.gr-bottom-nav-item.active {
+  color: var(--gr-accent);
+}
+
+/* ── Responsive grids ── */
+.gr-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+@media (min-width: 480px) {
+  .gr-stats-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (min-width: 768px) {
+  .gr-stats-grid {
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+}
+
+.gr-bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+@media (min-width: 768px) {
+  .gr-bottom-grid { grid-template-columns: 1fr 2fr; }
+}
+
+/* Settings save button: full-width mobile, auto desktop */
+.gr-btn-settings {
+  width: 100%;
+}
+@media (min-width: 640px) {
+  .gr-btn-settings {
+    width: auto;
+    min-width: 180px;
+  }
+}
+
+/* Settings 2-col grid: toggle + percentage side by side on desktop */
+.gr-settings-top {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+@media (min-width: 640px) {
+  .gr-settings-top { grid-template-columns: 1fr 1fr; }
+}
+
+/* ── Mobile transfer cards vs desktop table ── */
+.gr-transfer-cards { display: flex; flex-direction: column; }
+.gr-transfer-table  { display: none; }
+@media (min-width: 640px) {
+  .gr-transfer-cards { display: none; }
+  .gr-transfer-table  { display: block; }
 }

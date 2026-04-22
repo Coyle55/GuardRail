@@ -3,8 +3,8 @@
 import { Transfer } from '@/types'
 import { useMemo, useState } from 'react'
 import {
-  LineChart,
-  Line,
+  AreaChart,
+  Area,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -22,7 +22,6 @@ function formatKey(date: Date, period: Period): string {
   if (period === 'monthly') {
     return date.toLocaleString('default', { month: 'short', year: '2-digit' })
   }
-  // ISO week: YYYY-Www
   const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
   d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7))
   const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1))
@@ -42,7 +41,6 @@ export function SavingsChart({ transfers }: Props) {
         const key = formatKey(t.createdAt.toDate(), period)
         map.set(key, (map.get(key) ?? 0) + t.amount)
       })
-
     let cumulative = 0
     return Array.from(map.entries()).map(([label, amount]) => {
       cumulative += amount
@@ -51,53 +49,122 @@ export function SavingsChart({ transfers }: Props) {
   }, [transfers, period])
 
   return (
-    <div className="bg-gray-900 rounded-2xl p-6 border border-gray-800 mb-8">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-lg font-semibold text-white">Savings Over Time</h2>
-        <div className="flex gap-2">
-          {(['weekly', 'monthly'] as Period[]).map((p) => (
-            <button
-              key={p}
-              onClick={() => setPeriod(p)}
-              className={`px-3 py-1 text-sm rounded-lg transition ${
-                period === p
-                  ? 'bg-indigo-600 text-white'
-                  : 'text-gray-400 hover:text-white bg-gray-800'
-              }`}
-            >
-              {p.charAt(0).toUpperCase() + p.slice(1)}
-            </button>
-          ))}
+    <div
+      className="gr-fade-up-3"
+      style={{
+        background: 'var(--gr-card)',
+        border: '1px solid var(--gr-border)',
+        borderRadius: '16px',
+        padding: '24px',
+        marginBottom: '20px',
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
+        <h2
+          style={{
+            fontFamily: 'var(--font-syne)',
+            fontWeight: 600,
+            fontSize: '15px',
+            letterSpacing: '-0.01em',
+            color: 'var(--gr-text)',
+          }}
+        >
+          Cumulative Savings
+        </h2>
+        <div style={{ display: 'flex', gap: '6px' }}>
+          {(['weekly', 'monthly'] as Period[]).map((p) => {
+            const active = period === p
+            return (
+              <button
+                key={p}
+                onClick={() => setPeriod(p)}
+                style={{
+                  padding: '5px 12px',
+                  fontSize: '12px',
+                  fontWeight: active ? 600 : 400,
+                  fontFamily: 'inherit',
+                  borderRadius: '8px',
+                  border: `1px solid ${active ? 'var(--gr-accent-border)' : 'var(--gr-border-md)'}`,
+                  background: active ? 'var(--gr-accent-dim)' : 'transparent',
+                  color: active ? 'var(--gr-accent)' : 'var(--gr-text-3)',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s',
+                }}
+              >
+                {p.charAt(0).toUpperCase() + p.slice(1)}
+              </button>
+            )
+          })}
         </div>
       </div>
 
       {data.length === 0 ? (
-        <p className="text-gray-500 text-sm text-center py-12">No data yet.</p>
+        <div
+          style={{
+            height: '240px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'var(--gr-text-3)',
+            fontSize: '14px',
+          }}
+        >
+          No completed transfers yet.
+        </div>
       ) : (
         <ResponsiveContainer width="100%" height={240}>
-          <LineChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-            <XAxis dataKey="label" tick={{ fill: '#9ca3af', fontSize: 12 }} />
+          <AreaChart data={data} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
+            <defs>
+              <linearGradient id="savingsGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%"   stopColor="#00E87A" stopOpacity="0.18" />
+                <stop offset="100%" stopColor="#00E87A" stopOpacity="0" />
+              </linearGradient>
+            </defs>
+            <CartesianGrid
+              strokeDasharray="3 3"
+              stroke="rgba(255,255,255,0.04)"
+              vertical={false}
+            />
+            <XAxis
+              dataKey="label"
+              tick={{ fill: 'var(--gr-text-3)', fontSize: 11, fontFamily: 'var(--font-dm-mono, monospace)' }}
+              axisLine={false}
+              tickLine={false}
+              dy={8}
+            />
             <YAxis
-              tick={{ fill: '#9ca3af', fontSize: 12 }}
+              tick={{ fill: 'var(--gr-text-3)', fontSize: 11, fontFamily: 'var(--font-dm-mono, monospace)' }}
               tickFormatter={(v) => `$${v}`}
+              axisLine={false}
+              tickLine={false}
+              width={52}
             />
             <Tooltip
-              contentStyle={{ backgroundColor: '#111827', border: 'none', borderRadius: 8 }}
-              labelStyle={{ color: '#f9fafb' }}
+              contentStyle={{
+                backgroundColor: 'var(--gr-elevated)',
+                border: '1px solid var(--gr-border-md)',
+                borderRadius: '10px',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+                padding: '10px 14px',
+              }}
+              labelStyle={{ color: 'var(--gr-text-2)', fontSize: '11px', marginBottom: '4px' }}
+              itemStyle={{ color: 'var(--gr-accent)', fontFamily: 'var(--font-dm-mono, monospace)', fontSize: '14px', fontWeight: 500 }}
               formatter={(value) => {
-                const num = typeof value === 'number' ? value : Number(value)
+                const num = value == null ? 0 : typeof value === 'number' ? value : Number(value)
                 return [`$${num.toFixed(2)}`, 'Saved'] as [string, string]
               }}
+              cursor={{ stroke: 'rgba(255,255,255,0.08)', strokeWidth: 1 }}
             />
-            <Line
+            <Area
               type="monotone"
               dataKey="amount"
-              stroke="#6366f1"
+              stroke="#00E87A"
               strokeWidth={2}
+              fill="url(#savingsGrad)"
               dot={false}
+              activeDot={{ r: 4, fill: '#00E87A', stroke: 'var(--gr-bg)', strokeWidth: 2 }}
             />
-          </LineChart>
+          </AreaChart>
         </ResponsiveContainer>
       )}
     </div>

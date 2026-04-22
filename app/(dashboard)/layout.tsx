@@ -13,10 +13,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   useEffect(() => {
     if (loading || profileLoading) return
-    if (!user) {
-      router.replace('/login')
-      return
-    }
+    if (!user) { router.replace('/login'); return }
     if (profile && (!profile.tellerBettingAccountId || !profile.tellerSavingsAccountId)) {
       router.replace('/onboarding')
     }
@@ -25,9 +22,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   if (loading || profileLoading || !user) return null
 
   return (
-    <div className="flex min-h-screen bg-gray-950">
+    <div className="gr-dashboard-layout">
       <Nav />
-      <main className="flex-1 p-8 overflow-y-auto">{children}</main>
+      <main className="gr-main-content">{children}</main>
     </div>
   )
 }
