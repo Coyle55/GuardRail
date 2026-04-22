@@ -5,6 +5,7 @@ declare global {
     TellerConnect: {
       setup: (config: {
         applicationId: string
+        environment?: 'sandbox' | 'development' | 'production'
         onSuccess: (enrollment: { accessToken: string }) => void
         onExit?: () => void
       }) => { open: () => void }
@@ -26,6 +27,7 @@ export function TellerConnect({ onSuccess, label, disabled }: Props) {
     }
     const connect = window.TellerConnect.setup({
       applicationId: process.env.NEXT_PUBLIC_TELLER_APP_ID!,
+      environment: (process.env.NEXT_PUBLIC_TELLER_ENV as 'sandbox' | 'development' | 'production') ?? 'sandbox',
       onSuccess: (enrollment) => onSuccess(enrollment.accessToken),
     })
     connect.open()
