@@ -3,12 +3,14 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import {
   User,
+  GoogleAuthProvider,
   onAuthStateChanged,
   signInWithEmailAndPassword,
+  signInWithPopup,
   createUserWithEmailAndPassword,
   signOut,
 } from 'firebase/auth'
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore'
+import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore'
 import { auth, db } from './client'
 
 interface AuthContextType {
@@ -16,6 +18,7 @@ interface AuthContextType {
   loading: boolean
   signIn: (email: string, password: string) => Promise<void>
   signUp: (email: string, password: string, displayName: string) => Promise<void>
+  signInWithGoogle: () => Promise<void>
   logOut: () => Promise<void>
 }
 
@@ -55,12 +58,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  async function signInWithGoogle() {
+    const provider = new GoogleAuthProvider()
+    const result = await signInWithPopup(auth, provider)
+    // Create a profile doc for new Google users
+    const userRef = doc(db, 'users', result.user.uid)
+    const snap = await getDoc(userRef)
+    if (!snap.exists()) {
+      await setDoc(userRef, {
+        email: result.user.email ?? '',
+        displayName: result.user.displayName ?? '',
+        guardrailPercentage: 20,
+        guardrailActive: false,
+        tellerBettingAccountId: null,
+        tellerSavingsAccountId: null,
+        createdAt: serverTimestamp(),
+      })
+    }
+  }
+
   async function logOut() {
     await signOut(auth)
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signUp, logOut }}>
+    <AuthContext.Provider value={{ user, loading, signIn, signUp, signInWithGoogle, logOut }}>
       {children}
     </AuthContext.Provider>
   )

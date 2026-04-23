@@ -15,11 +15,28 @@ export function useUserProfile() {
       setLoading(false)
       return
     }
-    const unsub = onSnapshot(doc(db, 'users', user.uid), (snap) => {
-      setProfile(snap.exists() ? (snap.data() as UserProfile) : null)
-      setLoading(false)
-    })
-    return unsub
+
+    // Wait for a server-confirmed snapshot before resolving.
+    // Pure cache hits can be stale (e.g. account IDs written by the admin
+    // SDK during onboarding won't be in the client cache yet).
+    const unsub = onSnapshot(
+      doc(db, 'users', user.uid),
+      { includeMetadataChanges: true },
+      (snap) => {
+        if (snap.metadata.fromCache && !snap.metadata.hasPendingWrites) return
+        setProfile(snap.exists() ? (snap.data() as UserProfile) : null)
+        setLoading(false)
+      }
+    )
+
+    // Safety valve: if the server hasn't responded in 5 s (e.g. offline),
+    // unblock the UI with whatever data we have.
+    const fallback = setTimeout(() => setLoading(false), 5000)
+
+    return () => {
+      unsub()
+      clearTimeout(fallback)
+    }
   }, [user])
 
   return { profile, loading }

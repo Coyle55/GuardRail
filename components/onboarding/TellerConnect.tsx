@@ -34,11 +34,7 @@ export function TellerConnect({ onSuccess, label, disabled }: Props) {
   }
 
   return (
-    <button
-      onClick={handleClick}
-      disabled={disabled}
-      className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white font-semibold rounded-xl transition"
-    >
+    <button onClick={handleClick} disabled={disabled} className="gr-btn-primary">
       {label}
     </button>
   )
