@@ -106,14 +106,14 @@ export function TransferHistory({ transfers }: Props) {
                     fontSize: '11px', color: 'var(--gr-text-3)',
                     fontFamily: 'var(--font-dm-mono, monospace)',
                   }}>
-                    {t.createdAt.toDate().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' })}
+                    {t.createdAt.toDate().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                     {' · '}${t.triggerAmount.toFixed(2)} bet
                   </span>
                 </div>
                 <div style={{ textAlign: 'right', flexShrink: 0, marginLeft: '12px' }}>
                   <div style={{
                     fontFamily: 'var(--font-dm-mono, monospace)',
-                    fontSize: '15px', fontWeight: 500, color: 'var(--gr-accent)',
+                    fontSize: '15px', fontWeight: 500, color: t.status === 'completed' ? 'var(--gr-accent)' : 'var(--gr-text-3)',
                   }}>
                     +${t.amount.toFixed(2)}
                   </div>
@@ -147,7 +147,7 @@ export function TransferHistory({ transfers }: Props) {
                     onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}
                   >
                     <td style={{ padding: '13px 16px 13px 0', color: 'var(--gr-text-3)', fontFamily: 'var(--font-dm-mono, monospace)', fontSize: '12px', whiteSpace: 'nowrap' }}>
-                      {t.createdAt.toDate().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' })}
+                      {t.createdAt.toDate().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                     </td>
                     <td style={{ padding: '13px 16px 13px 0', color: 'var(--gr-text-2)' }}>{t.merchant}</td>
                     <td style={{ padding: '13px 16px 13px 0', textAlign: 'right', color: 'var(--gr-text-2)', fontFamily: 'var(--font-dm-mono, monospace)', fontSize: '12px' }}>
