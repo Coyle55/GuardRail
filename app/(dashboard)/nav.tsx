@@ -9,7 +9,7 @@ function ShieldMark() {
   return (
     <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden>
       <path d="M9 1.5L3 4.5v4.5c0 3.728 2.632 7.214 6 8.076C12.368 16.214 15 12.728 15 9V4.5L9 1.5z" fill="#06080C" />
-      <path d="M6 9.25l2.2 2.25 3.8-4.5" stroke="#06080C" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M6 9.25l2.2 2.25 3.8-4.5" stroke="#39FF9A" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
 }

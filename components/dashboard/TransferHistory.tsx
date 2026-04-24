@@ -153,7 +153,7 @@ export function TransferHistory({ transfers }: Props) {
                     <td style={{ padding: '13px 16px 13px 0', textAlign: 'right', color: 'var(--gr-text-2)', fontFamily: 'var(--font-dm-mono, monospace)', fontSize: '12px' }}>
                       ${t.triggerAmount.toFixed(2)}
                     </td>
-                    <td style={{ padding: '13px 16px 13px 0', textAlign: 'right', color: 'var(--gr-text)', fontFamily: 'var(--font-dm-mono, monospace)', fontSize: '12px', fontWeight: 500 }}>
+                    <td style={{ padding: '13px 16px 13px 0', textAlign: 'right', color: t.status === 'completed' ? 'var(--gr-accent)' : 'var(--gr-text-3)', fontFamily: 'var(--font-dm-mono, monospace)', fontSize: '12px', fontWeight: 500 }}>
                       ${t.amount.toFixed(2)}
                     </td>
                     <td style={{ padding: '13px 0' }}>
